@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
-import '../models/expense_model.dart';
-import '../widgets/expense_table.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
+import '../state/car_expenses_provider.dart';
+import '../widgets/expense_table.dart';
 
 class CarExpensesScreen extends StatelessWidget {
-  final List<ExpenseModel> expenses;
-  final double totalAmount;
-  final VoidCallback onAddExpense;
-  final VoidCallback onNavigateToInfo;
-  final VoidCallback onNavigateToHistory;
-  final ValueChanged<String>? onRemove;
-
   const CarExpensesScreen({
     super.key,
-    required this.expenses,
-    required this.totalAmount,
-    required this.onAddExpense,
-    required this.onNavigateToInfo,
-    required this.onNavigateToHistory,
-    this.onRemove,
   });
 
   @override
   Widget build(BuildContext context) {
+    final carExpensesProvider = CarExpensesProvider.of(context);
+    final expenses = carExpensesProvider.expenses;
+    final totalAmount = carExpensesProvider.totalAmount;
+    final onRemove = carExpensesProvider.removeExpense;
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -32,12 +25,12 @@ class CarExpensesScreen extends StatelessWidget {
             IconButton(
               icon: const Icon(Icons.info_outline),
               tooltip: 'Информация',
-              onPressed: onNavigateToInfo,
+              onPressed: () => context.pushReplacement('/info'),
             ),
             IconButton(
               icon: const Icon(Icons.history),
               tooltip: 'История',
-              onPressed: onNavigateToHistory,
+              onPressed: () => context.pushReplacement('/history'),
             ),
           ],
         ),
@@ -58,12 +51,13 @@ class CarExpensesScreen extends StatelessWidget {
       ),
       body: ExpenseTable(
         expenses: expenses,
-        onRemove: onRemove,
+        onRemove: (id) => onRemove(id, context),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: onAddExpense,
+        onPressed: () => context.push('/expenses/add'),
         child: const Icon(Icons.add),
       ),
     );
   }
 }
+

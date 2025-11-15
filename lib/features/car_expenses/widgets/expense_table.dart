@@ -42,7 +42,7 @@ class ExpenseTable extends StatelessWidget {
         return ExpenseRow(
           key: ValueKey(expense.id),
           expense: expense,
-          onRemove: onRemove != null ? () => onRemove!(expense.id) : null,
+          onRemove: onRemove != null ? (id) => onRemove!(id) : null,
         );
       },
     );

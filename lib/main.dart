@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Car Expenses App',
       theme: appTheme,
-      routerConfig: appRouter,
+      routerConfig: router,
     );
   }
 }

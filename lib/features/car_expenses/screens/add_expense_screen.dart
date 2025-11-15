@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import '../state/car_expenses_provider.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({
@@ -27,7 +28,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     if (_formKey.currentState!.validate()) {
       final title = _titleController.text;
       final amount = double.tryParse(_amountController.text) ?? 0.0;
-      context.pop({'title': title, 'amount': amount});
+      CarExpensesProvider.of(context, listen: false).addExpense(title, amount);
+      context.pop();
     }
   }
 

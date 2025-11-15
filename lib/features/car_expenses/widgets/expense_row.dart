@@ -4,7 +4,7 @@ import '../models/expense_model.dart';
 
 class ExpenseRow extends StatelessWidget {
   final ExpenseModel expense;
-  final VoidCallback? onRemove;
+  final ValueChanged<String>? onRemove;
 
   const ExpenseRow({
     super.key,
@@ -32,7 +32,7 @@ class ExpenseRow extends StatelessWidget {
           if (onRemove != null)
             IconButton(
               icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: onRemove,
+              onPressed: () => onRemove!(expense.id),
             ),
         ],
       ),

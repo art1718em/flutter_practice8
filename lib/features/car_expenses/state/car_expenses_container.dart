@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 import '../models/expense_model.dart';
-import '../screens/car_expenses_screen.dart';
+import 'car_expenses_provider.dart';
 
 class CarExpensesContainer extends StatefulWidget {
-  const CarExpensesContainer({super.key});
+  final Widget child;
+  const CarExpensesContainer({super.key, required this.child});
 
   @override
   State<CarExpensesContainer> createState() => _CarExpensesContainerState();
@@ -34,7 +34,7 @@ class _CarExpensesContainerState extends State<CarExpensesContainer> {
     });
   }
 
-  void _removeExpense(String id) {
+  void _removeExpense(String id, BuildContext context) {
     final expenseIndex = _expenses.indexWhere((expense) => expense.id == id);
     if (expenseIndex < 0) {
       return;
@@ -69,30 +69,15 @@ class _CarExpensesContainerState extends State<CarExpensesContainer> {
     }
   }
 
-  void _navigateToAddExpense() async {
-    final result = await context.push<Map<String, dynamic>?>('/expenses/add');
-    if (result != null && result.containsKey('title') && result.containsKey('amount')) {
-      _saveExpense(result['title'] as String, result['amount'] as double);
-    }
-  }
-
-  void _navigateToInfo() {
-    context.pushReplacement('/info');
-  }
-
-  void _navigateToHistory() {
-    context.pushReplacement('/history');
-  }
-
   @override
   Widget build(BuildContext context) {
-    return CarExpensesScreen(
+    return CarExpensesProvider(
       expenses: _expenses,
       totalAmount: _totalAmount,
-      onAddExpense: _navigateToAddExpense,
-      onRemove: _removeExpense,
-      onNavigateToInfo: _navigateToInfo,
-      onNavigateToHistory: _navigateToHistory,
+      addExpense: _saveExpense,
+      removeExpense: _removeExpense,
+      child: widget.child,
     );
   }
 }
+
