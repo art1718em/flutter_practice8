@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_practice8/features/service_history/state/service_history_state.dart';
+import 'package:flutter_practice8/shared/service_locator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../models/service_record_model.dart';
@@ -12,37 +14,33 @@ class ServiceHistoryScreen extends StatefulWidget {
 }
 
 class _ServiceHistoryScreenState extends State<ServiceHistoryScreen> {
-  final List<ServiceRecordModel> _serviceRecords = [];
+  final serviceHistoryState = sl.get<ServiceHistoryState>();
 
-  void _addServiceRecord(String title, double cost) {
-    final newRecord = ServiceRecordModel(
-      title: title,
-      cost: cost,
-      date: DateTime.now(),
-    );
-    setState(() {
-      _serviceRecords.add(newRecord);
-    });
+  @override
+  void initState() {
+    super.initState();
+    serviceHistoryState.addListener(_onStateChange);
   }
 
-  void _navigateToAddScreen() async {
-    final result = await context.push<Map<String, dynamic>?>('/history/add');
-    if (result != null && result.containsKey('title') && result.containsKey('cost')) {
-      _addServiceRecord(result['title'] as String, result['cost'] as double);
-    }
+  @override
+  void dispose() {
+    serviceHistoryState.removeListener(_onStateChange);
+    super.dispose();
   }
 
-  void _navigateToMain() {
-    context.pushReplacement('/expenses');
+  void _onStateChange() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final serviceRecords = serviceHistoryState.serviceRecords;
+
     Widget mainContent = ListView.builder(
       padding: const EdgeInsets.all(8.0),
-      itemCount: _serviceRecords.length,
+      itemCount: serviceRecords.length,
       itemBuilder: (context, index) {
-        final record = _serviceRecords[index];
+        final record = serviceRecords[index];
         return Card(
           child: ListTile(
             leading: const Icon(Icons.build),
@@ -57,7 +55,7 @@ class _ServiceHistoryScreenState extends State<ServiceHistoryScreen> {
       },
     );
 
-    if (_serviceRecords.isEmpty) {
+    if (serviceRecords.isEmpty) {
       mainContent = Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -84,12 +82,12 @@ class _ServiceHistoryScreenState extends State<ServiceHistoryScreen> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.home),
-          onPressed: _navigateToMain,
+          onPressed: () => context.pushReplacement('/expenses'),
         ),
       ),
       body: mainContent,
       floatingActionButton: FloatingActionButton(
-        onPressed: _navigateToAddScreen,
+        onPressed: () => context.push('/history/add'),
         child: const Icon(Icons.add),
       ),
     );
